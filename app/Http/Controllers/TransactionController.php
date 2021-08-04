@@ -3,10 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Models\Transaction;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
+use PhpParser\Node\Stmt\Catch_;
+use PhpParser\Node\Stmt\TryCatch;
+
+use function PHPSTORM_META\type;
 
 class TransactionController extends Controller
 {
@@ -43,36 +48,29 @@ class TransactionController extends Controller
      */
     public function store(Request $request)
     {
-        $rules = [
-            'title'              => 'required|min:3',
-            'amount'             => 'required|numeric',
-            'type'               => 'required|in:expense, revenue'
-        ];
-
-        $messages = [
-            'title.required'        => 'Judul harus diisi',
-            'username.min'          => 'Nama minimal 3 karakter',
-            'user_id.required'      => 'User id harus diisi'
-        ];
-
-        $validator = Validator::make($request->all(), $rules, $messages);
+        $validator = Validator::make($request->all(),[
+            'title'              => ['required'],
+            'amount'             => ['required', 'numeric'],
+            'type'               => ['required', 'in:expense, revenue']
+        ]);
 
         if($validator->fails()){
-            return redirect()->back()->withErrors($validator)->withInput($request->all);
+            return response()->json($validator->errors(), Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
-        $transactions = new Transaction;
-        $transactions->title=($request->title);
-        $transactions->amount=($request->amount);
-        $transactions->type=($request->type);
-        $simpan = $transactions->save();
+        try{
+            $transaction = Transaction::create($request->all());
+            $response    = [
+                'message' => 'Transaction Created',
+                'data'    => $transaction
+            ];
+            return response()->json($response, Response::HTTP_CREATED);
+        }
 
-        if($simpan){
-            Session::flash('success');
-            return redirect()->route('cart');
-        } else {
-            Session::flash('errors');
-            return redirect()->route('cartform');
+        catch(QueryException $e){
+            return response()->json([
+                'message'   => 'Transaction Failed' . $e->errorInfo
+            ]);
         }
     }
 

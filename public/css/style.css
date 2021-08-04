@@ -1,0 +1,48 @@
+.height lg{
+    height: 670px;
+}
+.head{
+    background-color: black;
+    background-size: 100%;
+    position: relative;
+}
+.opacity{
+    opacity: 50%;
+}
+.text-lg-position{
+    height: 400px;
+}
+.text-md-position{
+    height: 260px;
+}
+
+.text-sm-position{
+    height: 150px;
+}
+
+.bg-cyan{
+    background-color:darkcyan;
+}
+
+.sm-size{
+    font-size: 20px;
+}
+
+
+.margin{
+    margin:70px 0px 0px 0px;
+}
+
+.margin-box{
+    margin: 170px 0px 200px 0px;
+}
+
+.navbar-toggler-icon{
+    background-image:url(../img/toggle.svg);
+}
+
+
+.footer{
+    height: 120px;
+    position: sticky;
+}
